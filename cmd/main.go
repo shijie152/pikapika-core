@@ -25,15 +25,15 @@ func main() {
 		flutter.WindowIcon(iconProvider),
 	}
 	// 窗口初始化大小的处理
-	widthStr, _ := properties.LoadProperty("window_width", "600")
-	heightStr, _ := properties.LoadProperty("window_height", "900")
+	widthStr, _ := properties.LoadProperty("window_width", "1280")
+	heightStr, _ := properties.LoadProperty("window_height", "800")
 	width, _ := strconv.Atoi(widthStr)
 	height, _ := strconv.Atoi(heightStr)
 	if width <= 0 {
-		width = 600
+		width = 1280
 	}
 	if height <= 0 {
-		height = 900
+		height = 800
 	}
 	var runOptions []flutter.Option
 	runOptions = append(runOptions, flutter.WindowInitialDimensions(width, height))
