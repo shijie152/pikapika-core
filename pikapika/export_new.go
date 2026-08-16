@@ -528,7 +528,7 @@ func exportComicDownloadToEpub(params string) error {
 			imgPath := fmt.Sprintf("images/%04d.%s", picIdx, picture.Format)
 			pictureFiles = append(pictureFiles, imgPath)
 			manifest += fmt.Sprintf(`<item id="img%d" href="%s" media-type="image/%s"/>`, picIdx, imgPath, picture.Format)
-			xhtml += fmt.Sprintf(`<div><img src="%s" alt="%s"/></div>`, imgPath, picture.RankInEp)
+			xhtml += fmt.Sprintf(`<div><img src="%s" alt="%d"/></div>`, imgPath, picture.RankInEp)
 			buff, err := readDownloadFile(picture)
 			if err != nil {
 				return err

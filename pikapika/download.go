@@ -70,6 +70,10 @@ func downloadSupervisor() {
 	}
 }
 
+// 已认领的漫画 (防止多个 worker 抢同一本)
+var claimedComics = map[string]bool{}
+var claimedComicsMutex sync.Mutex
+
 // worker 主循环: 认领漫画 -> 处理 -> 回到循环
 func (w *downloadWorker) loop() {
 	for {
@@ -93,19 +97,50 @@ func downloadHasStop() bool {
 func (w *downloadWorker) claimComic() *comic_center2.ComicDownload {
 	downloadClaimMutex.Lock()
 	defer downloadClaimMutex.Unlock()
-	for pendingIndex >= len(pendingComics) {
+	// 上一本漫画已处理完, 释放占用
+	if w.comic != nil {
+		claimedComicsMutex.Lock()
+		delete(claimedComics, w.comic.ID)
+		claimedComicsMutex.Unlock()
+		w.comic = nil
+	}
+	for {
+		// 从当前缓存列表找未被认领的漫画
+		for pendingIndex < len(pendingComics) {
+			c := pendingComics[pendingIndex]
+			pendingIndex++
+			claimedComicsMutex.Lock()
+			claimed := claimedComics[c.ID]
+			claimedComicsMutex.Unlock()
+			if !claimed {
+				claimedComicsMutex.Lock()
+				claimedComics[c.ID] = true
+				claimedComicsMutex.Unlock()
+				return &c
+			}
+		}
+		// 列表耗尽, 重新加载
 		list, err := comic_center2.AllNeedDownload()
 		if err != nil || len(list) == 0 {
 			pendingComics = nil
 			pendingIndex = 0
 			return nil
 		}
-		pendingComics = list
+		// 过滤掉已被其他 worker 认领的漫画, 避免无限重载
+		pendingComics = make([]comic_center2.ComicDownload, 0, len(list))
 		pendingIndex = 0
+		claimedComicsMutex.Lock()
+		for _, c := range list {
+			if !claimedComics[c.ID] {
+				pendingComics = append(pendingComics, c)
+			}
+		}
+		claimedComicsMutex.Unlock()
+		if len(pendingComics) == 0 {
+			pendingComics = nil
+			return nil
+		}
 	}
-	c := pendingComics[pendingIndex]
-	pendingIndex++
-	return &c
 }
 
 // 删除下载任务, 当用户要删除下载的时候, 他会被加入删除队列, 而不是直接被删除, 以减少出错
