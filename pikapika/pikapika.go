@@ -651,12 +651,58 @@ func FlatInvoke(method string, params string) (string, error) {
 		return postGameChildComment(params)
 	case "viewLogPage":
 		return viewLogPage(params)
+	case "viewComic":
+		return "", viewComic(params)
 	case "clearAllViewLog":
 		comic_center.ClearAllViewLog()
 		return "", nil
 	case "deleteViewLog":
 		comic_center.DeleteViewLog(params)
 		return "", nil
+	case "mergeHistoriesFromLocal":
+		return "", mergeHistoriesFromLocal(params)
+	case "mergeHistoriesFromWebDav":
+		return "", mergeHistoriesFromWebDav(params)
+	case "mergeLocalFavoritesFromWebDav":
+		return "", mergeLocalFavoritesFromWebDav(params)
+	case "allCustomFolders":
+		return allCustomFolders()
+	case "createLocalFavoriteFolder":
+		return createLocalFavoriteFolder(params)
+	case "updateLocalFavoriteFolder":
+		return "", updateLocalFavoriteFolder(params)
+	case "deleteLocalFavoriteFolder":
+		return "", deleteLocalFavoriteFolder(params)
+	case "listLocalFavoriteFolders":
+		return listLocalFavoriteFolders()
+	case "countLocalFavoriteFolders":
+		return countLocalFavoriteFolders()
+	case "getLocalFavoriteFolder":
+		return getLocalFavoriteFolder(params)
+	case "listLocalFavoriteComics":
+		return listLocalFavoriteComics(params)
+	case "listAllLocalFavoriteComics":
+		return listAllLocalFavoriteComics()
+	case "addLocalFavoriteComic":
+		return "", addLocalFavoriteComic(params)
+	case "removeLocalFavoriteComic":
+		return "", removeLocalFavoriteComic(params)
+	case "moveLocalFavoriteComics":
+		return "", moveLocalFavoriteComics(params)
+	case "addSubscribed":
+		return "", addSubscribed(params)
+	case "removeSubscribed":
+		return "", removeSubscribed(params)
+	case "allSubscribed":
+		return allSubscribed()
+	case "loadSubscribed":
+		return loadSubscribed(params)
+	case "removeAllSubscribed":
+		return "", removeAllSubscribed()
+	case "updateSubscribed":
+		return "", updateSubscribed()
+	case "updateSubscribedForce":
+		return "", updateSubscribedForce()
 	case "cleanNetworkCache":
 		return "", cleanNetworkCache()
 	case "cleanImageCache":

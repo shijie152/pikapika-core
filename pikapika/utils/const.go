@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"os"
@@ -14,3 +15,7 @@ var (
 	}
 )
 
+
+func UUID() string {
+	return uuid.New().String()
+}

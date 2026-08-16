@@ -26,6 +26,7 @@ func InitDBConnect(databaseDir string) {
 	db.AutoMigrate(&ComicDownload{})
 	db.AutoMigrate(&ComicDownloadEp{})
 	db.AutoMigrate(&ComicDownloadPicture{})
+	db.AutoMigrate(&ComicSubscribe{})
 }
 
 func Transaction(t func(tx *gorm.DB) error) error {
@@ -580,4 +581,33 @@ func VACUUM() error {
 	mutex.Lock()
 	defer mutex.Unlock()
 	return db.Raw("VACUUM").Error
+}
+
+// AllViewLogs 返回全部浏览记录
+func AllViewLogs() ([]ComicView, error) {
+	mutex.Lock()
+	defer mutex.Unlock()
+	var views []ComicView
+	err := db.Order("last_view_time DESC").Find(&views).Error
+	if err != nil {
+		return nil, err
+	}
+	return views, nil
+}
+
+// MergeViewLog 合并一条浏览记录, 保留更新的最后浏览时间
+func MergeViewLog(view *ComicView) error {
+	mutex.Lock()
+	defer mutex.Unlock()
+	var exist ComicView
+	err := db.Where("id = ?", view.ID).First(&exist).Error
+	if err != nil {
+		// 本地不存在, 直接写入
+		return NoLockActionViewComicUpdateInfoDB(view, db)
+	}
+	if view.LastViewTime.After(exist.LastViewTime) {
+		view.CreatedAt = exist.CreatedAt
+		return NoLockActionViewComicUpdateInfoDB(view, db)
+	}
+	return nil
 }
