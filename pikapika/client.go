@@ -40,12 +40,36 @@ var dialer = &net.Dialer{
 
 // SwitchAddress
 var switchAddresses = map[int]string{
-	1: "172.67.7.24:443",
-	2: "104.20.180.50:443",
-	3: "172.67.208.169:443",
+	1: "172.67.194.19:443",
+	2: "172.67.80.1:443",
+	3: "104.21.235.3:443",
+	4: "104.21.235.4:443",
+	5: "104.21.91.145:443",
+	6: "172.67.7.24:443",
+	7: "104.20.180.50:443",
+	8: "104.20.181.50:443",
+	9: "104.22.64.159:443",
 }
 
 var switchAddress = 1
+
+// switchAddressForDial 返回当前分流地址: 优先使用 reloadSwitchAddress 同步的列表, 否则静态表
+func switchAddressForDial() string {
+	raw, _ := properties.LoadProperty("switchAddresses", "")
+	if raw != "" {
+		var list []string
+		if err := json.Unmarshal([]byte(raw), &list); err == nil {
+			idx := switchAddress
+			if idx > 0 && idx <= len(list) {
+				return list[idx-1]
+			}
+		}
+	}
+	if sAddr, ok := switchAddresses[switchAddress]; ok {
+		return sAddr
+	}
+	return ""
+}
 var switchAddressPattern, _ = regexp.Compile("^.+picacomic\\.com:\\d+$")
 
 func changeProxyUrl(urlStr string) bool {
@@ -56,7 +80,7 @@ func changeProxyUrl(urlStr string) bool {
 			ResponseHeaderTimeout: time.Second * 10,
 			IdleConnTimeout:       time.Second * 10,
 			DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
-				if sAddr, ok := switchAddresses[switchAddress]; ok {
+				if sAddr := switchAddressForDial(); sAddr != "" {
 					addr = sAddr
 				}
 				return dialer.DialContext(ctx, network, addr)
@@ -87,7 +111,7 @@ func changeProxyUrl(urlStr string) bool {
 			if err != nil {
 				return nil, err
 			}
-			if sAddr, ok := switchAddresses[switchAddress]; ok {
+			if sAddr := switchAddressForDial(); sAddr != "" {
 				addr = sAddr
 			}
 			return proxy.Dial(network, addr)
