@@ -611,3 +611,38 @@ func MergeViewLog(view *ComicView) error {
 	}
 	return nil
 }
+
+// MoveDownloadToFolder 批量移动下载到自定义文件夹
+func MoveDownloadToFolder(comicIdList []string, customFolder string) error {
+	mutex.Lock()
+	defer mutex.Unlock()
+	return db.Model(&ComicDownload{}).
+		Where("id IN ?", comicIdList).
+		Update("custom_folder", customFolder).Error
+}
+
+// ReadViewLogsFromFile 从外部拷贝的 comic_center.db 读取浏览记录
+func ReadViewLogsFromFile(dbPath string) ([]ComicView, error) {
+	external, err := gorm.Open(sqlite.Open(dbPath), &gorm.Config{})
+	if err != nil {
+		return nil, err
+	}
+	var views []ComicView
+	err = external.Table("comic_views").Find(&views).Error
+	if err != nil {
+		return nil, err
+	}
+	return views, nil
+}
+
+// FindDownloadPictureByOrder 按章节序号和图片序号查找下载图片
+func FindDownloadPictureByOrder(comicId string, epOrder int32, rankInEp int32) (*ComicDownloadPicture, error) {
+	mutex.Lock()
+	defer mutex.Unlock()
+	var picture ComicDownloadPicture
+	err := db.Where("comic_id = ? AND ep_order = ? AND rank_in_ep = ?", comicId, epOrder, rankInEp).First(&picture).Error
+	if err != nil {
+		return nil, err
+	}
+	return &picture, nil
+}

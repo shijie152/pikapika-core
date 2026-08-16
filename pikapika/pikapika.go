@@ -23,6 +23,7 @@ var (
 	remoteDir   string
 	downloadDir string
 	tmpDir      string
+	homeDir     string
 )
 
 var initFlag bool
@@ -33,6 +34,7 @@ func InitPlugin(_remoteDir string, _downloadDir string, _tmpDir string) {
 	}
 	initFlag = true
 	remoteDir = _remoteDir
+	homeDir = path2.Dir(path2.Dir(remoteDir))
 	downloadDir = _downloadDir
 	tmpDir = _tmpDir
 	comic_center.ResetAll()
@@ -834,6 +836,62 @@ func FlatInvoke(method string, params string) (string, error) {
 		return loadViewedList(params)
 	case "collections":
 		return collections(params)
+	case "downloadAll":
+		return "", downloadAll(params)
+	case "moveDownloadComic":
+		return "", moveDownloadComic(params)
+	case "loadDownloadCachePath":
+		return loadDownloadCachePath()
+	case "saveDownloadCachePath":
+		return "", saveDownloadCachePath(params)
+	case "getHomeDir":
+		return getHomeDir()
+	case "mkdirs":
+		return "", mkdirs(params)
+	case "getUseApiClientLoadImage":
+		return getUseApiClientLoadImage()
+	case "setUseApiClientLoadImage":
+		return "", setUseApiClientLoadImage(params)
+	case "leaderboardOfKnight":
+		return leaderboardOfKnight()
+	case "getLocalFavoriteComic":
+		return getLocalFavoriteComic(params)
+	case "reloadSwitchAddress":
+		return "", reloadSwitchAddress()
+	case "resetSwitchAddress":
+		return "", resetSwitchAddress()
+	case "ping":
+		return ping(params)
+	case "pingImg":
+		return pingImg(params)
+	case "configLinks":
+		return configLinks()
+	case "appConfig":
+		return appConfig()
+	case "proInfoAll":
+		return proInfoAll()
+	case "reloadPro":
+		return "", reloadPro()
+	case "inputCdKey":
+		return "", inputCdKey(params)
+	case "setPatAccessKey":
+		return "", setPatAccessKey(params)
+	case "reloadPatAccount":
+		return "", reloadPatAccount()
+	case "bindThisAccount":
+		return "", bindThisAccount()
+	case "clearPat":
+		return "", clearPat()
+	case "forgotPassword":
+		return forgotPassword(params)
+	case "resetPassword":
+		return resetPassword(params)
+	case "importComicViewFormOff":
+		return "", importComicViewFormOff(params)
+	case "startWebServer":
+		return "", startWebServer()
+	case "stopWebServer":
+		return "", stopWebServer()
 	}
 	return "", errors.New("method not found : " + method)
 }

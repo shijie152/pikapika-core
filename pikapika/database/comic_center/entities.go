@@ -71,6 +71,8 @@ type ComicDownload struct {
 	ThumbHeight          int32     `json:"thumbHeight"`
 	ThumbLocalPath       string    `json:"thumbLocalPath"`
 	Pause                bool      `json:"pause"`
+	FromDegenerator      string    `json:"fromDegenerator"`
+	CustomFolder         string    `gorm:"index:download_cf" json:"customFolder"`
 }
 
 type ComicDownloadEp struct {
