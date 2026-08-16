@@ -49,6 +49,7 @@ func InitPlugin(_remoteDir string, _downloadDir string, _tmpDir string) {
 	comic_center.ResetAll()
 	downloadAndExportPath = loadDownloadAndExportPath()
 	downloadThreadCount = loadDownloadThreadCount()
+	downloadComicCount = loadDownloadComicCount()
 	go downloadBackground()
 	downloadRunning = true
 }
@@ -106,6 +107,27 @@ func loadDownloadThreadCount() int {
 	}
 	i, err := strconv.Atoi(count)
 	if err != nil {
+		return 1
+	}
+	return i
+}
+
+func saveDownloadComicCount(value int) {
+	strValue := strconv.Itoa(value)
+	properties.SaveProperty("downloadComicCount", strValue)
+	downloadComicCount = value
+}
+
+func loadDownloadComicCount() int {
+	count, err := properties.LoadProperty("downloadComicCount", "1")
+	if err != nil {
+		return 1
+	}
+	i, err := strconv.Atoi(count)
+	if err != nil {
+		return 1
+	}
+	if i < 1 {
 		return 1
 	}
 	return i
@@ -842,6 +864,15 @@ func FlatInvoke(method string, params string) (string, error) {
 		return "", nil
 	case "loadDownloadThreadCount":
 		return strconv.Itoa(loadDownloadThreadCount()), nil
+	case "saveDownloadComicCount":
+		i, e := strconv.Atoi(params)
+		if e != nil {
+			return "", e
+		}
+		saveDownloadComicCount(i)
+		return "", nil
+	case "loadDownloadComicCount":
+		return strconv.Itoa(loadDownloadComicCount()), nil
 	case "switchLikeComment":
 		return switchLikeComment(params)
 	case "updatePassword":

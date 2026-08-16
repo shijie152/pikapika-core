@@ -646,3 +646,17 @@ func FindDownloadPictureByOrder(comicId string, epOrder int32, rankInEp int32) (
 	}
 	return &picture, nil
 }
+
+// AllNeedDownload 返回所有待下载的漫画 (未完成且未暂停)
+func AllNeedDownload() ([]ComicDownload, error) {
+	mutex.Lock()
+	defer mutex.Unlock()
+	var comics []ComicDownload
+	err := db.Where(
+		"download_failed = 0 AND pause = 0 AND deleting = 0 AND download_finished = 0",
+	).Order("id ASC").Find(&comics).Error
+	if err != nil {
+		return nil, err
+	}
+	return comics, nil
+}

@@ -22,7 +22,6 @@ var options = []flutter.Option{
 var eventMutex = sync.Mutex{}
 var eventSink *plugin.EventSink
 var desktopWindow *glfw.Window
-var flutterContext plugin.BinaryMessenger
 
 type EventHandler struct {
 }
@@ -45,8 +44,6 @@ type PikapikaPlugin struct {
 }
 
 func (p *PikapikaPlugin) InitPlugin(messenger plugin.BinaryMessenger) error {
-	flutterContext = messenger
-
 	channel := plugin.NewMethodChannel(messenger, channelName, plugin.StandardMethodCodec{})
 
 	channel.HandleFunc("flatInvoke", func(arguments interface{}) (interface{}, error) {
@@ -58,6 +55,33 @@ func (p *PikapikaPlugin) InitPlugin(messenger plugin.BinaryMessenger) error {
 			}
 		}
 		return nil, errors.New("params error")
+	})
+
+	// 窗口控制 (全屏/关闭)
+	channel.HandleFunc("setFullScreen", func(arguments interface{}) (interface{}, error) {
+		full, ok := arguments.(bool)
+		if !ok {
+			return nil, errors.New("params error")
+		}
+		if desktopWindow == nil {
+			return nil, errors.New("window not ready")
+		}
+		if full {
+			monitor := glfw.GetPrimaryMonitor()
+			mode := monitor.GetVideoMode()
+			if mode != nil {
+				desktopWindow.SetMonitor(monitor, 0, 0, mode.Width, mode.Height, mode.RefreshRate)
+			}
+		} else {
+			desktopWindow.SetMonitor(nil, 100, 100, 1280, 800, 0)
+		}
+		return nil, nil
+	})
+	channel.HandleFunc("closeWindow", func(arguments interface{}) (interface{}, error) {
+		if desktopWindow != nil {
+			desktopWindow.SetShouldClose(true)
+		}
+		return nil, nil
 	})
 
 	// 数据目录
@@ -106,28 +130,6 @@ func (p *PikapikaPlugin) InitPlugin(messenger plugin.BinaryMessenger) error {
 
 func (p *PikapikaPlugin) InitPluginGLFW(window *glfw.Window) error {
 	desktopWindow = window
-	// 窗口控制通道 (全屏/关闭)
-	windowChannel := plugin.NewMethodChannel(flutterContext, "window", plugin.StandardMethodCodec{})
-	windowChannel.HandleFunc("setFullScreen", func(arguments interface{}) (interface{}, error) {
-		full, ok := arguments.(bool)
-		if !ok {
-			return nil, errors.New("params error")
-		}
-		if full {
-			monitor := glfw.GetPrimaryMonitor()
-			mode := monitor.GetVideoMode()
-			if mode != nil {
-				window.SetMonitor(monitor, 0, 0, mode.Width, mode.Height, mode.RefreshRate)
-			}
-		} else {
-			window.SetMonitor(nil, 100, 100, 1280, 800, 0)
-		}
-		return nil, nil
-	})
-	windowChannel.HandleFunc("closeWindow", func(arguments interface{}) (interface{}, error) {
-		window.SetShouldClose(true)
-		return nil, nil
-	})
 	window.SetSizeCallback(func(w *glfw.Window, width int, height int) {
 		go func() {
 			properties.SaveProperty("window_width", strconv.Itoa(width))
