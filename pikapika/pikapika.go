@@ -19,6 +19,15 @@ import (
 	"time"
 )
 
+var debugFlatInvoke = os.Getenv("PIPA_DEBUG_FLAT") == "1"
+
+func truncateStr(s string, n int) string {
+	if len(s) > n {
+		return s[:n] + "..."
+	}
+	return s
+}
+
 var (
 	remoteDir   string
 	downloadDir string
@@ -538,8 +547,11 @@ func convertImageToJPEG100(params string) error {
 }
 
 // 检查更新只能使用defaultHttpClient, 而不能使用pika的client, 否则会 "tls handshake failure"
+// 使用带超时的客户端, 避免断网时挂起初始化
+var defaultHttpClient = &http.Client{Timeout: time.Second * 10}
+
 func defaultHttpClientGet(url string) (string, error) {
-	rsp, err := http.DefaultClient.Get(url)
+	rsp, err := defaultHttpClient.Get(url)
 	if err != nil {
 		return "", err
 	}
@@ -566,6 +578,14 @@ func loadViewedList(params string) (string, error) {
 }
 
 func FlatInvoke(method string, params string) (string, error) {
+	if debugFlatInvoke {
+		println("FLATINVOKE >>>", method, "|", truncateStr(params, 60))
+	}
+	defer func() {
+		if debugFlatInvoke {
+			println("FLATINVOKE <<<", method)
+		}
+	}()
 	switch method {
 	case "saveProperty":
 		return "", saveProperty(params)

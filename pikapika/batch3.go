@@ -25,6 +25,11 @@ func getHomeDir() (string, error) {
 	return homeDir, nil
 }
 
+// AppHomeDir 桌面端 dataLocal 通道使用
+func AppHomeDir() string {
+	return homeDir
+}
+
 func mkdirs(p string) error {
 	return os.MkdirAll(p, 0700)
 }

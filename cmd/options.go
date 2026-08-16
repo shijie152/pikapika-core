@@ -57,6 +57,26 @@ func (p *PikapikaPlugin) InitPlugin(messenger plugin.BinaryMessenger) error {
 		return nil, errors.New("params error")
 	})
 
+	// 数据目录
+	channel.HandleFunc("dataLocal", func(arguments interface{}) (interface{}, error) {
+		return pikapika.AppHomeDir(), nil
+	})
+
+	// 数据迁移
+	channel.HandleFunc("migrate", func(arguments interface{}) (interface{}, error) {
+		return nil, nil
+	})
+
+	// 身份验证 (桌面无生物识别, 直接放行)
+	channel.HandleFunc("verifyAuthentication", func(arguments interface{}) (interface{}, error) {
+		return true, nil
+	})
+
+	// 字体列表
+	channel.HandleFunc("fontList", func(arguments interface{}) (interface{}, error) {
+		return []string{}, nil
+	})
+
 	exporting := plugin.NewEventChannel(messenger, "flatEvent", plugin.StandardMethodCodec{})
 	exporting.Handle(&EventHandler{})
 
@@ -68,6 +88,15 @@ func (p *PikapikaPlugin) InitPlugin(messenger plugin.BinaryMessenger) error {
 			sink.Success(message)
 		}
 	}
+
+	// 网络状态通道
+	networkChannel := plugin.NewMethodChannel(messenger, "network", plugin.StandardMethodCodec{})
+	networkChannel.HandleFunc("getNetworkType", func(arguments interface{}) (interface{}, error) {
+		return "wifi", nil
+	})
+	networkChannel.HandleFunc("getIsMobile", func(arguments interface{}) (interface{}, error) {
+		return false, nil
+	})
 
 	return nil // no error
 }
