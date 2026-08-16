@@ -6,6 +6,7 @@ import (
 	"pikapika/pikapika/database/comic_center"
 	"pikapika/pikapika/database/local_favorite"
 	"pikapika/pikapika/database/network_cache"
+	"pikapika/pikapika/database/pkz_center"
 	"pikapika/pikapika/database/properties"
 	"pikapika/pikapika/utils"
 )
@@ -26,6 +27,7 @@ func InitApplication(applicationDir string) {
 	network_cache.InitDBConnect(databasesDir)
 	comic_center.InitDBConnect(databasesDir)
 	local_favorite.InitDBConnect(databasesDir)
+	pkz_center.InitDBConnect(databasesDir)
 	pikapika.InitClient()
 	pikapika.InitPlugin(remoteDir, downloadDir, tmpDir)
 }

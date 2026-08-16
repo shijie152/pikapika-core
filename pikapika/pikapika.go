@@ -748,6 +748,44 @@ func FlatInvoke(method string, params string) (string, error) {
 		return exportComicDownload(params)
 	case "exportComicDownloadToJPG":
 		return "", exportComicDownloadToJPG(params)
+	case "exportComicDownloadToPkz":
+		return "", exportComicDownloadToPkz(params)
+	case "exportComicDownloadToPki":
+		return "", exportComicDownloadToPki(params)
+	case "exportAnyComicDownloadsToPki":
+		return "", exportAnyComicDownloadsToPki(params)
+	case "exportAnyComicDownloadsToZip":
+		return "", exportAnyComicDownloadsToZip(params)
+	case "exportComicDownloadJpegZip":
+		return "", exportComicDownloadJpegZip(params)
+	case "exportComicDownloadToCbzsZip":
+		return "", exportComicDownloadToCbzsZip(params)
+	case "exportComicDownloadToEpub":
+		return "", exportComicDownloadToEpub(params)
+	case "exportComicDownloadToPDF":
+		return "", exportComicDownloadToPDF(params)
+	case "exportComicDownloadToPDFFolder":
+		return "", exportComicDownloadToPDFFolder(params)
+	case "exportComicJpegsEvenNotFinish":
+		return "", exportComicJpegsEvenNotFinish(params)
+	case "importComicDownloadDir":
+		return "", importComicDownloadDir(params)
+	case "importComicDownloadPki":
+		return "", importComicDownloadPki(params)
+	case "pkzInfo":
+		return pkzInfo(params)
+	case "loadPkzFile":
+		return loadPkzFile(params)
+	case "viewPkz":
+		return "", viewPkz(params)
+	case "viewPkzComic":
+		return "", viewPkzComic(params)
+	case "viewPkzEpAndPicture":
+		return "", viewPkzEpAndPicture(params)
+	case "pkzComicViewLogs":
+		return pkzComicViewLogs(params)
+	case "pkzComicViewLogByPkzNameAndId":
+		return pkzComicViewLogByPkzNameAndId(params)
 	case "exportComicUsingSocket":
 		i, e := exportComicUsingSocket(params)
 		return fmt.Sprintf("%d", i), e

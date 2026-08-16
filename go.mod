@@ -11,7 +11,9 @@ require (
 	github.com/miguelpruivo/flutter_file_picker/go v0.0.0-20210622152105-9f0a811028a0
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/niuhuan/pica-go v0.0.0-20250310075551-2c208674152c
+	github.com/niuhuan/pkz-go v0.0.0-20220629111244-1125328c8acb // indirect
 	github.com/pkg/errors v0.9.1
+	github.com/signintech/gopdf v0.29.0 // indirect
 	github.com/studio-b12/gowebdav v0.9.0 // indirect
 	golang.org/x/image v0.0.0-20190802002840-cff245a6509b
 	golang.org/x/mobile v0.0.0-20220414153400-ce6a79cf6a13 // indirect
