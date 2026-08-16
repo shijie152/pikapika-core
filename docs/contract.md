@@ -78,3 +78,14 @@ libapp.so (Dart) ──MethodChannel("method")──> 核心二进制 (Go)
 4. **下载/导出/浏览记录**：按 MIT 源码结构重写 + 补齐新功能
 5. **Pro/pat 模块**：自行实现等价契约（或直接移除，Dart 层已解锁）
 6. **构建**：go-flutter(hover) 出 Linux AppImage，gomobile 出 Android .aar，替换官方核心
+
+## 7. 实现状态（2026-08-16）
+
+- ✅ **152/152 flatInvoke 方法全部实现**（commit 9484be1）
+- ✅ 数据库层：properties / network_cache / comic_center / local_favorite / pkz_center（schema 与官方一致）
+- ✅ 本地收藏 13 / 订阅 7 / 历史同步 5 / 导出家族 24 / pkz 查看 7 / 下载管理 / 配置 / web server / 密码找回 / Pro 空实现
+- ✅ 功能测试全通过（导出→导入往返、pkz 加密读写、web server 局域网访问）
+- ⬜ 待办：
+  - 与真实 pika 账号联调（需网络）：login/viewComic/downloadAll/updateSubscribed
+  - 端到端替换：hover 构建 Linux 版、gomobile 构建 Android 版，替换官方核心
+  - pkz/pki 与官方 App 的互操作性验证
